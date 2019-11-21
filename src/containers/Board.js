@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import Space from '../components/Space';
 import BoardContainer from '../components/BoardContainer';
 
-class Board extends Component {
+export class Board extends Component {
   state = {
     spaceNames: []
   }
   
   componentDidMount() {
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const numbers = ['1', '2' ,'3', '4', '5', '6', '7', '8'];
     const result = [];
     for (let i = 0; i < letters.length; i++) {
