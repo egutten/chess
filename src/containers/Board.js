@@ -3,34 +3,16 @@ import { connect } from 'react-redux';
 import Space from '../components/Space';
 import BoardContainer from '../components/BoardContainer';
 
-class Board extends Component {
-  state = {
-    spaceNames: []
-  }
-  
-  componentDidMount() {
-    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
-    const numbers = ['1', '2' ,'3', '4', '5', '6', '7', '8'];
-    const result = [];
-    for (let i = 0; i < letters.length; i++) {
-      let str = '';
-      
-      for (let j = 0; j < numbers.length; j++) {
-        str += letters[i] + numbers[j];
-        result.push(str);
-        str = '';
-      }
-    }
-    this.setState({spaceNames: result});
-  }
-
+export class Board extends Component {
   
   render () {
-    let spaces = this.state.spaceNames.map(name => (
+    let spaces = this.props.board.map(obj => (
       <Space
-        key={name}
-        name={name}
-      />
+        key={obj.name}
+        name={obj.name}
+        piece={obj.piece}
+      >
+      </Space>    
     ));
     
     return (
@@ -43,7 +25,8 @@ class Board extends Component {
 
 const mapStateToProps = state => {
   return {
-    
+    board: state.board,
+    pieces: state.pieces
   }
 }
 
