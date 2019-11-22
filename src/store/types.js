@@ -1,1 +1,3 @@
-
+export const ACTIVATE_PIECE = 'ACTIVATE_PIECE';
+export const CHOOSE_SPACE = 'CHOOSE_SPACE';
+export const CAPTURE_PIECE = 'CAPTURE_PIECE';
