@@ -1,39 +1,34 @@
 import React from 'react';
 import styled from '@emotion/styled';
+import { colorSpaces, placePiece } from '../shared/helperFunctions';
 
 const space = (props) => {
-  let color = '';
   
-  const name = props.name.split('')
-  const letter = name[0];
-  const number = name[1];
-  const letterCheck = ['A', 'C', 'E', 'G'];
-
-  if (letterCheck.includes(letter) && number % 2 === 0) {
-    color = 'black';
-  } 
-  
-  if (!letterCheck.includes(letter) && number % 2 !== 0) {
-    color = 'black';
+  let piece = null;
+  if (props.piece) {
+    piece = placePiece(props.piece);
   }
-
+  
   const style = {
-    background: `${color}`
+    background: `${colorSpaces(props.name)}`
   }
-  
+
   return (
     <Container
       style={style}
-      piece={props.piece}
       name={props.name}
     >
+      {piece}
     </Container>
   )
 }
 
 const Container = styled.div({
   width: '100px',
-  height: '100px'
+  height: '100px',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center'
 })
 
 export default space;

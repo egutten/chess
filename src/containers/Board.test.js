@@ -10,13 +10,6 @@ describe('<Board />', () => {
   
   it('renders without crashing', () => {
     shallow(<Board />)
-  })
-  
-  it('should generate spaces on mounting', () => {
-    const space = wrapper.find('space');
-    
-    expect(space.length).toEqual(64);
-    expect(wrapper.state().spaceNames).toHaveLength(64);
-  })
+  });
 
 })
