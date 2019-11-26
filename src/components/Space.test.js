@@ -17,7 +17,7 @@ describe('<Space />', () => {
   });
   
   it('renders without crashing', () => {
-    shallow(<Space {...mockProps}/>)
+    wrapper
   })
   
   it('places the piece', () => {
