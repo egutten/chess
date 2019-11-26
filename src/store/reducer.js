@@ -1,7 +1,7 @@
 import * as types from './types';
 import { findActiveSpace, updateObject } from '../shared/helperFunctions';
 
-const initialState = {
+export const initialState = {
   board: [
     {name: 'A1', piece: 'rook1W'},
     {name: 'A2', piece: 'knight1W'},

@@ -20,7 +20,6 @@ export class Board extends Component {
   }
   
   render () {
-    console.log(this.props.captured);
     let spaces = this.props.board.map(obj => (
       <Space
         key={obj.name}
