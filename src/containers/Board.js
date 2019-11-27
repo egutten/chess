@@ -8,7 +8,7 @@ export class Board extends Component {
   
   pieceSelectHandler = (event, piece) => {
     event.stopPropagation();
-    if (this.props.activePiece) {
+    if (this.props.activePiece && this.props.activePiece !== piece) {
       this.props.capturePiece(piece);
     } else {
       this.props.activatePiece(piece);
@@ -16,7 +16,9 @@ export class Board extends Component {
   }
   
   spaceSelectHandler = (name) => {
-    this.props.chooseSpace(name);
+    if (this.props.activePiece) {
+      this.props.chooseSpace(name);
+    } 
   }
   
   render () {
@@ -31,10 +33,15 @@ export class Board extends Component {
       </Space>    
     ));
     
+    let userMessage = this.props.userMessage;
+    
     return (
-      <BoardContainer>
-      {spaces}
-      </BoardContainer>
+      <React.Fragment>
+        {userMessage}
+        <BoardContainer>
+        {spaces}
+        </BoardContainer>
+      </React.Fragment>
     );
   }
 }
@@ -43,7 +50,8 @@ const mapStateToProps = state => {
   return {
     board: state.board,
     activePiece: state.activePiece,
-    captured: state.captured
+    captured: state.captured,
+    userMessage: state.userMessage
   }
 }
 

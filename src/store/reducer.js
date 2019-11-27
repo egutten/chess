@@ -1,13 +1,13 @@
 import * as types from './types';
-import { findActiveSpace, updateObject } from '../shared/helperFunctions';
+import { findActiveSpace, updateObject, checkRules } from '../shared/helperFunctions';
 
 export const initialState = {
   board: [
     {name: 'A1', piece: 'rook1W'},
     {name: 'A2', piece: 'knight1W'},
     {name: 'A3', piece: 'bishop1W'},
-    {name: 'A4', piece: 'kingW'},
-    {name: 'A5', piece: 'queenW'},
+    {name: 'A4', piece: 'king1W'},
+    {name: 'A5', piece: 'queen1W'},
     {name: 'A6', piece: 'bishop2W'},
     {name: 'A7', piece: 'knight2W'},
     {name: 'A8', piece: 'rook2W'},
@@ -62,15 +62,16 @@ export const initialState = {
     {name: 'H1', piece: 'rook1B'},
     {name: 'H2', piece: 'knight1B'},
     {name: 'H3', piece: 'bishop1B'},
-    {name: 'H4', piece: 'kingB'},
-    {name: 'H5', piece: 'queenB'},
+    {name: 'H4', piece: 'king1B'},
+    {name: 'H5', piece: 'queen1B'},
     {name: 'H6', piece: 'bishop2B'},
     {name: 'H7', piece: 'knight2B'},
     {name: 'H8', piece: 'rook2B'}
   ],
   activeSpace: null,
   activePiece: null,
-  captured: []
+  captured: [],
+  userMessage: ''
 }
 
 const activatePiece = (state, action) => {
@@ -81,51 +82,63 @@ const activatePiece = (state, action) => {
 }
 
 const chooseSpace = (state, action) => {
-  //if state.activePiece is included in the rules
-  
-  state.board.find((o, i) => {
-    //Find the space you want to move to and set the piece to your piece
-    if (o.name === action.name) {
-      o.piece = state.activePiece;
-    }
-    //Remove your piece from the space it was in before
-    if (o.name === state.activeSpace) {
-      o.piece = null;
-    }
-    return null;
-  })
-  const newBoard = state.board.slice();  
-  return updateObject(state, {
-    board: newBoard,
-    activePiece: null,
-    activeSpace: null
-  })
+  // check that the move is allowed by the rules
+  if (!checkRules(state.activePiece, state.activeSpace, action.name)) {
+    return updateObject(state, {
+      userMessage: 'You can\'t move there!'
+    });
+  } else {
+    state.board.find((o, i) => {
+      //Find the space you want to move to and set the piece to your piece
+      if (o.name === action.name) {
+        o.piece = state.activePiece;
+      }
+      //Remove your piece from the space it was in before
+      if (o.name === state.activeSpace) {
+        o.piece = null;
+      }
+      return null;
+    })
+    const newBoard = state.board.slice();  
+    return updateObject(state, {
+      board: newBoard,
+      activePiece: null,
+      activeSpace: null
+    })
+  }  
 }
 
 const capturePiece = (state, action) => {
-  //Find the space of the piece you want to capture
-  state.board.find((o, i) => {
-    if (o.name === findActiveSpace(state.board, action.piece)){
-      //IF YOU ARE ABLE TO MOVE TO THAT SPOT!!!!!
-      //Replace your piece in the captured piece's place
-      o.piece = state.activePiece
-    }
-    return null;
-  })
-  //Find the space you moved from and remove the piece
-  state.board.find((o, i) => {
-    if (o.name === state.activeSpace) {
-      o.piece = null;
-    }
-    return null;
-  })
-  const newBoard = state.board.slice();  
-  return updateObject(state, {
-    board: newBoard,
-    activePiece: null,
-    activeSpace: null,
-    captured: state.captured.concat(action.piece)
-  })
+  // check that the move is allowed by the rules
+  const newSpace = findActiveSpace(state.board, action.piece)
+  if (!checkRules(state.activePiece, state.activeSpace, newSpace)) {
+    return updateObject(state, {
+      userMessage: 'You can\'t move there!'
+    });
+  } else {
+    //Find the space of the piece you want to capture
+    state.board.find((o, i) => {
+      if (o.name === newSpace){
+        //Replace your piece in the captured piece's place
+        o.piece = state.activePiece
+      }
+      return null;
+    })
+    //Find the space you moved from and remove the piece
+    state.board.find((o, i) => {
+      if (o.name === state.activeSpace) {
+        o.piece = null;
+      }
+      return null;
+    })
+    const newBoard = state.board.slice();  
+    return updateObject(state, {
+      board: newBoard,
+      activePiece: null,
+      activeSpace: null,
+      captured: state.captured.concat(action.piece)
+    })
+  }  
 }
 
 const reducer = (state = initialState, action) => {
