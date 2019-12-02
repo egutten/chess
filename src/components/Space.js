@@ -3,11 +3,7 @@ import styled from '@emotion/styled';
 import { colorSpaces, placePiece } from '../shared/helperFunctions';
 
 const space = (props) => {
-  
-  let piece = null;
-  if (props.piece) {
-    piece = placePiece(props.piece);
-  }
+  const piece = placePiece(props.piece, props.pieceClicked);
   
   const style = {
     background: `${colorSpaces(props.name)}`
@@ -17,6 +13,7 @@ const space = (props) => {
     <Container
       style={style}
       name={props.name}
+      onClick={props.spaceClicked}
     >
       {piece}
     </Container>
@@ -28,7 +25,8 @@ const Container = styled.div({
   height: '100px',
   display: 'flex',
   justifyContent: 'center',
-  alignItems: 'center'
+  alignItems: 'center',
+  cursor: 'pointer'
 })
 
 export default space;
