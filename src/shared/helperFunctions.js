@@ -62,6 +62,49 @@ export const findActiveSpace = (board, piece) => {
   }
 }
 
+export const preventLeapFrogging = (board, thisSpace, nextSpace, pieceType) => {
+  let start;
+  let end;
+  const path = [];
+  
+  for (let obj of board) {
+    if (obj.name === thisSpace) {
+      start = obj;
+    }
+  }
+  
+  for (let obj of board) {
+    if (obj.name === nextSpace) {
+      end = obj;
+    }
+  }
+  
+  if (board.indexOf(start) > board.indexOf(end)) {
+    for (let i = board.indexOf(start); i > board.indexOf(end); i--) {
+      if (checkRules(pieceType, thisSpace, board[i].name)) {
+        path.push(board[i]);
+      }
+    }
+  }
+  
+  if (board.indexOf(start) < board.indexOf(end)) {
+    for (let i = board.indexOf(start); i < board.indexOf(end); i++) {
+      if (checkRules(pieceType, thisSpace, board[i].name)) {
+        path.push(board[i]);
+      }
+    }
+  }
+  
+  if (path.length) {
+    for (let i = 1; i < path.length; i++) {
+      if (path[i].piece !== null) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 export const checkRules = (piece, activeSpace, futureSpace) => {
   const currentSpace = processSpace(activeSpace);
   const newSpace = processSpace(futureSpace);
@@ -87,29 +130,17 @@ export const checkRules = (piece, activeSpace, futureSpace) => {
         return currentSpace.letterCode + 1 === newSpace.letterCode
       }    
     }
+  } else if (type === 'rook') {
+    if ((currentSpace.letterCode === newSpace.letterCode) && 
+        (newSpace.number >=1 && newSpace.number <= 8)) {
+      return true;
+    }
+    if ((currentSpace.letterCode !== newSpace.letterCode) &&
+        (currentSpace.number === newSpace.number)) {
+          return true;
+    }
+    return false;
   }
-  // switch (piece) {
-  //   case ('pawn'):
-  //   //rules
-  //   break;
-  //   case ('rook'):
-  //   //rules 
-  //   break;
-  //   case ('knight'):
-  //   //rules 
-  //   break;
-  //   case ('bishop'):
-  //   //rules 
-  //   break;
-  //   case ('queen'):
-  //   //rules 
-  //   break;
-  //   case ('king'):
-  //   //rules 
-  //   break;
-  //   default: 
-  //     return null;
-  // }
 }
 
 const processSpace = (space) => {

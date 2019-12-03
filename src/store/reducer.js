@@ -1,5 +1,5 @@
 import * as types from './types';
-import { findActiveSpace, updateObject, checkRules } from '../shared/helperFunctions';
+import { findActiveSpace, updateObject, checkRules, preventLeapFrogging } from '../shared/helperFunctions';
 
 export const initialState = {
   board: [
@@ -82,6 +82,11 @@ const activatePiece = (state, action) => {
 }
 
 const chooseSpace = (state, action) => {
+  if (!preventLeapFrogging(state.board, state.activeSpace, action.name, state.activePiece)) {
+    return updateObject(state, {
+      userMessage: 'You can\'t leap over other pieces!'
+    });
+  }
   // check that the move is allowed by the rules
   if (!checkRules(state.activePiece, state.activeSpace, action.name)) {
     return updateObject(state, {
@@ -103,14 +108,20 @@ const chooseSpace = (state, action) => {
     return updateObject(state, {
       board: newBoard,
       activePiece: null,
-      activeSpace: null
+      activeSpace: null,
+      userMessage: ''
     })
   }  
 }
 
 const capturePiece = (state, action) => {
-  // check that the move is allowed by the rules
   const newSpace = findActiveSpace(state.board, action.piece)
+  if (!preventLeapFrogging(state.board, state.activeSpace, newSpace, state.activePiece)) {
+    return updateObject(state, {
+      userMessage: 'You can\'t leap over other pieces!'
+    });
+  }
+  // check that the move is allowed by the rules
   if (!checkRules(state.activePiece, state.activeSpace, newSpace)) {
     return updateObject(state, {
       userMessage: 'You can\'t move there!'
@@ -136,7 +147,8 @@ const capturePiece = (state, action) => {
       board: newBoard,
       activePiece: null,
       activeSpace: null,
-      captured: state.captured.concat(action.piece)
+      captured: state.captured.concat(action.piece),
+      userMessage: ''
     })
   }  
 }
