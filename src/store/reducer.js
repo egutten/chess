@@ -1,5 +1,5 @@
 import * as types from './types';
-import { findActiveSpace, updateObject, checkRules, preventLeapFrogging } from '../shared/helperFunctions';
+import { findActiveSpace, updateObject, checkRules, preventLeapFrogging, movePiece } from '../shared/helperFunctions';
 
 export const initialState = {
   board: [
@@ -77,36 +77,28 @@ export const initialState = {
 const activatePiece = (state, action) => {
   return updateObject(state, {
     activePiece: action.piece,
-    activeSpace: findActiveSpace(state.board, action.piece)
+    activeSpace: findActiveSpace(state.board, action.piece),
   });
 }
 
 const chooseSpace = (state, action) => {
-  if (!preventLeapFrogging(state.board, state.activeSpace, action.name, state.activePiece)) {
-    return updateObject(state, {
-      userMessage: 'You can\'t leap over other pieces!'
-    });
-  }
+  // if (!preventLeapFrogging(state.board, state.activeSpace, action.name, state.activePiece)) {
+  //   return updateObject(state, {
+  //     userMessage: 'You can\'t leap over other pieces!',
+  //     activeSpace: null,
+  //     activePiece: null
+  //   });
+  // }
   // check that the move is allowed by the rules
   if (!checkRules(state.activePiece, state.activeSpace, action.name)) {
     return updateObject(state, {
-      userMessage: 'You can\'t move there!'
+      userMessage: 'You can\'t move there!',
+      activeSpace: null,
+      activePiece: null
     });
   } else {
-    state.board.find((o, i) => {
-      //Find the space you want to move to and set the piece to your piece
-      if (o.name === action.name) {
-        o.piece = state.activePiece;
-      }
-      //Remove your piece from the space it was in before
-      if (o.name === state.activeSpace) {
-        o.piece = null;
-      }
-      return null;
-    })
-    const newBoard = state.board.slice();  
     return updateObject(state, {
-      board: newBoard,
+      board: movePiece(state.board, state.activePiece, state.activeSpace, action.name),
       activePiece: null,
       activeSpace: null,
       userMessage: ''
@@ -115,36 +107,24 @@ const chooseSpace = (state, action) => {
 }
 
 const capturePiece = (state, action) => {
-  const newSpace = findActiveSpace(state.board, action.piece)
-  if (!preventLeapFrogging(state.board, state.activeSpace, newSpace, state.activePiece)) {
-    return updateObject(state, {
-      userMessage: 'You can\'t leap over other pieces!'
-    });
-  }
+  const newSpace = findActiveSpace(state.board, action.piece);
+  // if (!preventLeapFrogging(state.board, state.activeSpace, newSpace, state.activePiece)) {
+  //   return updateObject(state, {
+  //     userMessage: 'You can\'t leap over other pieces!',
+  //     activeSpace: null,
+  //     activePiece: null
+  //   });
+  // }
   // check that the move is allowed by the rules
   if (!checkRules(state.activePiece, state.activeSpace, newSpace)) {
     return updateObject(state, {
-      userMessage: 'You can\'t move there!'
+      userMessage: 'You can\'t move there!',
+      activeSpace: null,
+      activePiece: null
     });
-  } else {
-    //Find the space of the piece you want to capture
-    state.board.find((o, i) => {
-      if (o.name === newSpace){
-        //Replace your piece in the captured piece's place
-        o.piece = state.activePiece
-      }
-      return null;
-    })
-    //Find the space you moved from and remove the piece
-    state.board.find((o, i) => {
-      if (o.name === state.activeSpace) {
-        o.piece = null;
-      }
-      return null;
-    })
-    const newBoard = state.board.slice();  
+  } else { 
     return updateObject(state, {
-      board: newBoard,
+      board: movePiece(state.board, state.activePiece, state.activeSpace, newSpace),
       activePiece: null,
       activeSpace: null,
       captured: state.captured.concat(action.piece),

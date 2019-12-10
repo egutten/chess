@@ -50,7 +50,7 @@ export const colorPieceText = (team) => {
   if (team === 'B') {
     return 'white';
   } else {
-    return;
+    return 'black';
   }
 }
 
@@ -60,6 +60,21 @@ export const findActiveSpace = (board, piece) => {
       return obj.name;
     }
   }
+}
+
+export const movePiece = (board, activePiece, activeSpace, newSpace) => {
+  const newBoard = board.slice();
+  for (let obj of newBoard) {
+    //Find the space you want to move to and set the piece to your piece
+    if (obj.name === newSpace) {
+      obj.piece = activePiece;
+    }
+    //Remove your piece from the space it was in before
+    if (obj.name === activeSpace) {
+      obj.piece = null;
+    }
+  }
+  return newBoard; 
 }
 
 export const preventLeapFrogging = (board, thisSpace, nextSpace, pieceType) => {
@@ -80,8 +95,9 @@ export const preventLeapFrogging = (board, thisSpace, nextSpace, pieceType) => {
   }
   
   if (board.indexOf(start) > board.indexOf(end)) {
-    for (let i = board.indexOf(start); i > board.indexOf(end); i--) {
+    for (let i = board.indexOf(start); i >= board.indexOf(end); i--) {
       if (checkRules(pieceType, thisSpace, board[i].name)) {
+        console.log(board[i]);
         path.push(board[i]);
       }
     }
@@ -140,6 +156,17 @@ export const checkRules = (piece, activeSpace, futureSpace) => {
           return true;
     }
     return false;
+  } else if (type === 'bishop') {
+    if (currentSpace.letterCode === newSpace.letterCode) {
+      return false;
+    }    
+    if (Math.abs(currentSpace.letterCode - newSpace.letterCode) !== Math.abs(currentSpace.number - newSpace.number)) {
+      return false;
+    }    
+    if (currentSpace.number === newSpace.number) {
+      return false;
+    }
+    return true;
   }
 }
 
